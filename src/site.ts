@@ -13,6 +13,7 @@ export const SITE = {
     { name: 'Factur-X Tools', url: 'https://factur-x-tools.kothanromeo.dev/', text: 'Lire, valider et créer des factures Factur-X' },
     { name: 'CFONB & camt Tools', url: 'https://cfonb-camt-tools.kothanromeo.dev/', text: 'Convertir un relevé bancaire en Excel' },
     { name: 'FEC Tools', url: 'https://fec-tools.kothanromeo.dev/', text: 'Lire et vérifier un Fichier des Écritures Comptables' },
+    { name: 'SEPA XML Tools', url: 'https://sepa-xml-tools.kothanromeo.dev/', text: 'Créer des fichiers de virements et prélèvements SEPA depuis Excel' },
   ],
   locale: 'fr_FR',
   lang: 'fr',
