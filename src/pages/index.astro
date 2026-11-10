@@ -1,0 +1,99 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import TiersChecker from '../components/TiersChecker.astro';
+import ToolCards from '../components/ToolCards.astro';
+import Faq from '../components/Faq.astro';
+import { faqSchema, href, toolSchema, type FaqItem } from '../site';
+
+const site = Astro.site!;
+const posts = (await getCollection('guides')).sort((a, b) => +b.data.published - +a.data.published);
+
+const faq: FaqItem[] = [
+  {
+    q: 'Quel format de fichier faut-il ?',
+    a: '<p>Un fichier Excel (.xlsx) ou CSV, avec une ligne d’en-tête : un export de votre logiciel de facturation, de comptabilité ou de votre CRM convient. L’outil reconnaît les colonnes (raison sociale, SIREN, SIRET, TVA, IBAN, BIC, code postal, pays) et vous laisse corriger son choix avant de lancer la vérification.</p>',
+  },
+  {
+    q: 'Mes données sont-elles envoyées quelque part ?',
+    a: '<p>Les contrôles (clés de SIREN, SIRET, TVA, IBAN, RIB, cohérence entre numéros) se font entièrement dans votre navigateur. Seule l’étape facultative « annuaire » envoie des données : les SIREN, et pour les lignes sans SIREN le nom et le code postal, à l’API publique de l’État. Elle n’est lancée que si vous cliquez sur le bouton, et les IBAN ne sont jamais transmis.</p>',
+  },
+  {
+    q: 'Un SIREN « valide » existe-t-il forcément ?',
+    a: '<p>Non. La clé de contrôle détecte les fautes de frappe, mais un numéro peut avoir une clé correcte sans correspondre à aucune entreprise, ou désigner une entreprise fermée. C’est ce que vérifie l’étape « annuaire », à partir de la base Sirene de l’Insee.</p>',
+  },
+  {
+    q: 'Pourquoi certains numéros apparaissent en « 5,52E+08 » ?',
+    a: '<p>C’est Excel qui a converti la colonne en nombres : les longs numéros passent en notation scientifique et perdent leurs derniers chiffres, et les zéros en tête disparaissent. L’outil le repère. Pour corriger, formatez la colonne en « Texte » dans le fichier d’origine avant de saisir ou de coller les numéros.</p>',
+  },
+  {
+    q: 'Le numéro de TVA est-il vérifié auprès de l’administration ?',
+    a: '<p>Pour la France, la clé est recalculée à partir du SIREN, ce qui détecte toute incohérence. L’existence d’un numéro de TVA européen se vérifie sur le service VIES de la Commission européenne : l’outil contrôle le format de chaque pays et la clé belge, mais n’interroge pas VIES.</p>',
+  },
+];
+---
+<Base
+  title="Vérifier un fichier clients ou fournisseurs : SIREN, TVA, IBAN (gratuit)"
+  description="Contrôlez tout un fichier clients ou fournisseurs : SIREN, SIRET, TVA intracommunautaire, IBAN et BIC vérifiés ligne par ligne, SIREN manquants complétés via l’annuaire officiel."
+  keywords={["vérifier fichier clients", "contrôle siren en masse", "vérifier siren excel", "vérifier numéro tva intracommunautaire", "vérifier iban en masse", "nettoyer fichier fournisseurs", "siren client obligatoire", "fichier clients facture électronique", "contrôle tiers comptabilité", "base fournisseurs iban", "siren manquant", "annuaire des entreprises"]}
+  schema={[toolSchema(site, { name: 'Vérificateur de fichier clients et fournisseurs', path: '/', description: 'Contrôle SIREN, SIRET, TVA intracommunautaire, IBAN et BIC d’un fichier de tiers.' }), faqSchema(faq)]}
+>
+  <section class="hero wrap">
+    <h1>Vérifier un fichier clients ou fournisseurs</h1>
+    <p class="lead">
+      Déposez l’export de votre logiciel : chaque SIREN, SIRET, numéro de TVA et IBAN est contrôlé, les incohérences sont signalées
+      et les SIREN manquants peuvent être retrouvés dans l’annuaire officiel. Vous récupérez le fichier avec une colonne « anomalies ».
+    </p>
+    <ul class="badges">
+      <li>SIREN obligatoire depuis 2026</li>
+      <li>Excel et CSV</li>
+      <li>Contrôles dans le navigateur</li>
+      <li>Gratuit et open source</li>
+    </ul>
+  </section>
+
+  <div class="wrap">
+    <TiersChecker />
+
+    <section class="section">
+      <h2>Vérifier un seul numéro</h2>
+      <ToolCards exclude="/" />
+    </section>
+
+    <section class="section two-col">
+      <div>
+        <h2>Pourquoi maintenant</h2>
+        <p>
+          Depuis le 1<sup>er</sup> septembre 2026, le <strong>SIREN du client</strong> fait partie des mentions obligatoires des factures entre entreprises,
+          et c’est lui qui sert à acheminer les factures électroniques vers la bonne plateforme. Pour les PME et les micro-entreprises,
+          l’émission de factures électroniques devient obligatoire le 1<sup>er</sup> septembre 2027.
+        </p>
+        <p>
+          Dans la plupart des fichiers clients, le SIREN est absent, faux ou abîmé par Excel. C’est le moment de faire le ménage.
+          La démarche complète est dans le guide <a href={href('/guides/siren-client-obligatoire-fichier-clients/')}>mettre à jour son fichier clients</a>.
+        </p>
+      </div>
+      <div>
+        <h2>Ce que l’outil contrôle</h2>
+        <ul>
+          <li><strong>SIREN et SIRET</strong> : clé de Luhn (avec l’exception de La Poste), zéros supprimés, notation scientifique d’Excel.</li>
+          <li><strong>TVA intracommunautaire</strong> : clé française recalculée à partir du SIREN, format des 27 pays de l’UE.</li>
+          <li><strong>IBAN</strong> : clé de contrôle, longueur par pays, clé RIB française, RIB saisi à la place d’un IBAN.</li>
+          <li><strong>BIC</strong> : format, et pays cohérent avec celui de l’IBAN.</li>
+          <li><strong>Cohérence</strong> : le SIRET appartient-il au SIREN ? Le numéro de TVA correspond-il à la même entreprise ?</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Les guides</h2>
+      <ul class="post-list">
+        {posts.map((p) => (
+          <li class="card"><a href={href(`/guides/${p.id}/`)}><h3>{p.data.title}</h3><p>{p.data.description}</p></a></li>
+        ))}
+      </ul>
+    </section>
+
+    <Faq items={faq} />
+  </div>
+</Base>

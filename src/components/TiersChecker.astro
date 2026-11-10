@@ -1,0 +1,26 @@
+---
+interface Props {
+  label?: string;
+}
+const { label = 'Déposez votre fichier clients ou fournisseurs (Excel ou CSV)' } = Astro.props;
+---
+<section class="tiers-tool" data-tiers aria-label="Vérificateur de fichier de tiers">
+  <div class="drop" data-drop>
+    <p class="big">{label}</p>
+    <p>Fichier .xlsx ou .csv, avec une ligne d’en-tête. Glissez-déposez le fichier ici, ou</p>
+    <div class="btn-row" style="justify-content:center">
+      <label class="btn" style="margin:0;color:var(--accent-ink)">
+        Choisir un fichier
+        <input type="file" accept=".xlsx,.csv,.txt,.tsv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" data-file />
+      </label>
+      <button type="button" class="btn secondary" data-sample>Essayer avec un exemple</button>
+    </div>
+    <p class="privacy">🔒 Les contrôles se font dans votre navigateur. Rien n’est envoyé, sauf si vous choisissez ensuite d’interroger l’annuaire officiel.</p>
+  </div>
+  <div class="result" data-result hidden aria-live="polite"></div>
+</section>
+
+<script>
+  import { mountTiers } from '../scripts/tiers-ui';
+  document.querySelectorAll<HTMLElement>('[data-tiers]').forEach(mountTiers);
+</script>

@@ -1,0 +1,24 @@
+---
+import { href } from '../site';
+interface Props {
+  exclude?: string;
+}
+const { exclude } = Astro.props;
+const tools = [
+  { path: '/', title: 'Vérifier un fichier', text: 'Tout un fichier clients ou fournisseurs contrôlé ligne par ligne, avec l’annuaire officiel en option.' },
+  { path: '/verifier-siren-siret/', title: 'Vérifier un SIREN ou un SIRET', text: 'Clé de Luhn, exception de La Poste, et l’entreprise dans l’annuaire en un clic.' },
+  { path: '/calcul-numero-tva-intracommunautaire/', title: 'Calculer un numéro de TVA', text: 'Le numéro de TVA intracommunautaire français déduit du SIREN, et le contrôle des numéros européens.' },
+  { path: '/verifier-iban-rib/', title: 'Vérifier un IBAN ou un RIB', text: 'Clé IBAN, longueur par pays, clé RIB française, conversion d’un RIB en IBAN, cohérence avec le BIC.' },
+].filter((t) => t.path !== exclude);
+---
+<div class="grid-3 grid-tools">
+  {tools.map((t) => (
+    <a class="card tool-card" href={href(t.path)}>
+      <h3>{t.title}</h3>
+      <p>{t.text}</p>
+    </a>
+  ))}
+</div>
+<style>
+  .grid-tools { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+</style>

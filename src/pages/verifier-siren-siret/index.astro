@@ -1,0 +1,69 @@
+---
+import Base from '../../layouts/Base.astro';
+import QuickCheck from '../../components/QuickCheck.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Vérifier un SIREN ou un SIRET', path: '/verifier-siren-siret/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Quelle différence entre SIREN et SIRET ?',
+    a: '<p>Le SIREN (9 chiffres) identifie l’entreprise. Le SIRET (14 chiffres) identifie un établissement : c’est le SIREN suivi d’un numéro de 5 chiffres, le NIC. Une entreprise a un seul SIREN mais autant de SIRET que d’établissements (siège, magasins, agences…).</p>',
+  },
+  {
+    q: 'Comment savoir si un SIREN est valide ?',
+    a: '<p>Ses 9 chiffres doivent respecter l’algorithme de Luhn, ce qui détecte la plupart des fautes de frappe. Pour savoir si l’entreprise existe et est active, il faut ensuite consulter l’annuaire officiel : le bouton qui apparaît sous le résultat le fait pour vous.</p>',
+  },
+  {
+    q: 'Pourquoi un SIRET de La Poste est refusé par certains logiciels ?',
+    a: '<p>Parce que les établissements de La Poste (SIREN 356 000 000) n’utilisent pas la clé de Luhn : la règle est que la somme de leurs 14 chiffres soit un multiple de 5. Beaucoup de contrôles l’ignorent et rejettent à tort des SIRET parfaitement valides. L’outil applique la bonne règle.</p>',
+  },
+];
+---
+<Base
+  title="Vérifier un SIREN ou un SIRET en ligne (clé de Luhn, annuaire)"
+  description="Vérifiez un numéro SIREN ou SIRET : clé de Luhn, exception de La Poste, numéro de TVA associé, et l’entreprise dans l’annuaire officiel en un clic. Gratuit, sans inscription."
+  keywords={["vérifier siren", "vérifier siret", "siren valide", "siret valide", "contrôle siren", "clé siren", "algorithme de luhn siren", "siret la poste", "trouver entreprise par siren", "numéro siren", "vérification siret en ligne", "siren 9 chiffres"]}
+  schema={[toolSchema(site, { name: 'Vérificateur de SIREN et SIRET', path: '/verifier-siren-siret/', description: 'Contrôle un numéro SIREN ou SIRET et affiche l’entreprise correspondante.' }), breadcrumbSchema(site, crumbs), faqSchema(faq)]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Vérifier un SIREN ou un SIRET</h1>
+    <p class="lead">Saisissez le numéro : sa clé est contrôlée immédiatement, le numéro de TVA correspondant est calculé, et un clic suffit pour voir l’entreprise dans l’annuaire officiel.</p>
+  </section>
+  <div class="wrap">
+    <QuickCheck label="SIREN ou SIRET" placeholder="ex. 552 032 534 ou 552 032 534 00703" />
+
+    <article class="prose narrow section">
+      <h2>Comment le contrôle fonctionne</h2>
+      <p>
+        Un SIREN n’est pas un nombre choisi au hasard : son dernier chiffre est une <strong>clé de contrôle</strong> calculée avec l’algorithme de Luhn,
+        le même que pour les numéros de carte bancaire. On double un chiffre sur deux en partant de la droite, on additionne les chiffres obtenus,
+        et le total doit être un multiple de 10. Une faute de frappe sur un chiffre, ou l’inversion de deux chiffres voisins, est presque toujours détectée.
+      </p>
+      <p>
+        Le SIRET suit la même règle sur ses 14 chiffres, avec une exception : les établissements de <strong>La Poste</strong>. Le détail, avec un exemple
+        calculé pas à pas, est dans le guide <a href={href('/guides/siren-siret-cle-luhn/')}>SIREN, SIRET et clé de Luhn</a>.
+      </p>
+      <h2>Ce que la clé ne dit pas</h2>
+      <p>
+        Une clé correcte prouve que le numéro est bien formé, pas qu’il existe. Le bouton « Voir l’entreprise dans l’annuaire officiel » interroge
+        l’API publique de l’État (base Sirene de l’Insee) : raison sociale, adresse du siège, entreprise active ou cessée, numéro de TVA.
+        Seul le SIREN est envoyé, et seulement si vous cliquez.
+      </p>
+      <h2>Tout un fichier d’un coup</h2>
+      <p>
+        Vous avez des centaines de clients à vérifier ? Le <a href={href('/')}>vérificateur de fichier</a> fait les mêmes contrôles sur un export Excel ou CSV,
+        vérifie la cohérence entre SIREN, SIRET et TVA, et retrouve les SIREN manquants.
+      </p>
+    </article>
+    <Faq items={faq} />
+    <section class="section"><h2>Les autres outils</h2><ToolCards exclude="/verifier-siren-siret/" /></section>
+  </div>
+</Base>

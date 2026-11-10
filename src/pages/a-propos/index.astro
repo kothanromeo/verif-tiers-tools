@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import { SITE, breadcrumbSchema } from '../../site';
+
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'À propos', path: '/a-propos/' },
+];
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.author,
+  url: SITE.authorUrl,
+  sameAs: [SITE.linkedin, SITE.instagram, SITE.portfolio, SITE.authorUrl],
+  jobTitle: 'Développeur',
+};
+---
+<Base
+  keywords={["vérif tiers", "roméo kothan", "vérificateur siren open source", "outil gratuit fichier clients", "développeur"]}
+  title="À propos du projet"
+  description="Vérif Tiers est un projet open source de Roméo Kothan : un vérificateur gratuit de SIREN, numéros de TVA et IBAN pour les fichiers clients et fournisseurs."
+  schema={[person, breadcrumbSchema(Astro.site!, crumbs)]}
+>
+  <Crumbs items={crumbs} />
+  <article class="wrap narrow prose" style="padding-top:1.5rem">
+    <h1>À propos</h1>
+    <p>
+      Je m’appelle {SITE.author}, je suis développeur. Avec la facture électronique, le SIREN du client devient une donnée indispensable,
+      alors que dans la plupart des fichiers clients il manque, il est faux ou Excel l’a transformé en « 5,52E+08 ». J’ai construit cet outil
+      pour faire ce nettoyage en quelques minutes, sans confier son fichier clients à un service inconnu.
+    </p>
+    <h2>Les principes</h2>
+    <ul>
+      <li><strong>Les contrôles se font dans votre navigateur.</strong> Clés, formats et cohérences sont calculés localement.</li>
+      <li><strong>L’annuaire est facultatif et transparent.</strong> Il n’est interrogé que sur votre demande, via l’API publique de l’État, et seuls les SIREN (ou nom et code postal) sont envoyés.</li>
+      <li><strong>Le code est public</strong>, sous licence MIT.</li>
+    </ul>
+    <h2>Sous le capot</h2>
+    <p>
+      Astro pour le site, TypeScript sans framework côté client. Les fichiers Excel sont lus et écrits directement au format Office Open XML,
+      avec fflate pour la compression. L’API « Recherche d’entreprises » est appelée au plus 4 fois par seconde, avec reprise automatique en cas de refus temporaire.
+    </p>
+    <h2>Contribuer</h2>
+    <p>Une règle à ajouter, un format de TVA à affiner ? Ouvrez une <a href={`${SITE.repo}/issues`} rel="noopener">issue sur GitHub</a>, ou retrouvez-moi sur <a href={SITE.linkedin} rel="me noopener">LinkedIn</a>.</p>
+  </article>
+</Base>

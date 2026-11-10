@@ -1,0 +1,72 @@
+---
+import Base from '../../layouts/Base.astro';
+import QuickCheck from '../../components/QuickCheck.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Calculer un numéro de TVA intracommunautaire', path: '/calcul-numero-tva-intracommunautaire/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Comment calculer un numéro de TVA intracommunautaire ?',
+    a: '<p>En France : FR, puis une clé de 2 chiffres, puis le SIREN. La clé vaut (12 + 3 × (SIREN modulo 97)) modulo 97. Pour le SIREN 552 032 534, on obtient FR27552032534. Saisissez un SIREN dans l’outil pour faire le calcul.</p>',
+  },
+  {
+    q: 'Le numéro calculé est-il forcément valable ?',
+    a: '<p>Il est correct si l’entreprise est assujettie à la TVA. Une micro-entreprise en franchise en base n’a souvent pas de numéro attribué, et il faut le demander au service des impôts pour en obtenir un. Le calcul indique le numéro « théorique » ; l’annuaire officiel indique celui qui est réellement enregistré.</p>',
+  },
+  {
+    q: 'Et les numéros des autres pays ?',
+    a: '<p>Chaque pays a son format : DE suivi de 9 chiffres en Allemagne, BE suivi de 10 chiffres en Belgique, IT suivi de 11 chiffres en Italie… L’outil vérifie le format des 27 États membres, recalcule la clé belge, et indique quand il faut confirmer l’existence sur le service européen VIES.</p>',
+  },
+];
+---
+<Base
+  title="Calcul du numéro de TVA intracommunautaire à partir du SIREN"
+  description="Calculez le numéro de TVA intracommunautaire français à partir du SIREN, ou vérifiez un numéro existant : clé recalculée, format des 27 pays de l’UE. Gratuit, instantané."
+  keywords={["calcul numéro tva intracommunautaire", "numéro tva intracommunautaire", "calcul clé tva", "tva intracommunautaire siren", "trouver numéro tva", "vérifier numéro tva intracommunautaire", "formule clé tva", "numéro tva fr", "tva intracom", "clé tva intracommunautaire", "format numéro tva europe"]}
+  schema={[toolSchema(site, { name: 'Calcul du numéro de TVA intracommunautaire', path: '/calcul-numero-tva-intracommunautaire/', description: 'Calcule et vérifie un numéro de TVA intracommunautaire.' }), breadcrumbSchema(site, crumbs), faqSchema(faq)]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Calculer un numéro de TVA intracommunautaire</h1>
+    <p class="lead">Saisissez un SIREN pour obtenir le numéro de TVA français, ou un numéro de TVA pour le vérifier. Le calcul est instantané et se fait dans votre navigateur.</p>
+  </section>
+  <div class="wrap">
+    <QuickCheck label="SIREN ou numéro de TVA" placeholder="ex. 552032534 ou FR27552032534" />
+
+    <article class="prose narrow section">
+      <h2>La formule</h2>
+      <p>Un numéro de TVA français a 13 caractères :</p>
+      <ul>
+        <li><code>FR</code>, le code de la France ;</li>
+        <li>une <strong>clé</strong> de 2 caractères ;</li>
+        <li>le <strong>SIREN</strong> de l’entreprise, 9 chiffres.</li>
+      </ul>
+      <p>La clé se calcule ainsi :</p>
+      <pre><code>clé = (12 + 3 × (SIREN modulo 97)) modulo 97</code></pre>
+      <p>
+        Exemple avec le SIREN 552 032 534 : 552032534 modulo 97 = 5 ; 12 + 3 × 5 = 27 ; 27 modulo 97 = 27.
+        Le numéro est donc <code>FR27552032534</code>. Une clé inférieure à 10 s’écrit avec un zéro devant (<code>FR05…</code>).
+      </p>
+      <p>
+        Tout le détail, avec les cas particuliers (clés alphanumériques, entreprises non assujetties), est dans le guide
+        <a href={href('/guides/calcul-cle-tva-intracommunautaire/')}>calcul de la clé de TVA intracommunautaire</a>.
+      </p>
+      <h2>Pourquoi vérifier les numéros de TVA de ses clients</h2>
+      <p>
+        Le numéro de TVA de l’acheteur est une mention obligatoire des factures entre entreprises de l’Union européenne. Pour une livraison
+        intracommunautaire exonérée, un numéro faux ou invalide peut remettre en cause l’exonération. Et dans une facture électronique,
+        un numéro incohérent avec le SIREN fait partie des anomalies que les plateformes détectent.
+      </p>
+      <p>Pour vérifier tout un fichier clients, utilisez le <a href={href('/')}>vérificateur de fichier</a> : il calcule aussi le numéro attendu quand la colonne TVA est vide.</p>
+    </article>
+    <Faq items={faq} />
+    <section class="section"><h2>Les autres outils</h2><ToolCards exclude="/calcul-numero-tva-intracommunautaire/" /></section>
+  </div>
+</Base>

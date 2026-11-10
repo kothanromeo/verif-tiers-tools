@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import QuickCheck from '../../components/QuickCheck.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import Faq from '../../components/Faq.astro';
+import ToolCards from '../../components/ToolCards.astro';
+import { breadcrumbSchema, faqSchema, href, toolSchema, type FaqItem } from '../../site';
+
+const site = Astro.site!;
+const crumbs = [
+  { name: 'Accueil', path: '/' },
+  { name: 'Vérifier un IBAN ou un RIB', path: '/verifier-iban-rib/' },
+];
+const faq: FaqItem[] = [
+  {
+    q: 'Un IBAN valide garantit-il que le compte existe ?',
+    a: '<p>Non. La clé détecte les erreurs de saisie, pas l’existence du compte ni le nom de son titulaire. Pour un nouveau fournisseur, ou un changement d’IBAN annoncé par e-mail (un scénario classique de fraude), confirmez toujours par un autre canal, par téléphone à un numéro connu.</p>',
+  },
+  {
+    q: 'Comment convertir un RIB en IBAN ?',
+    a: '<p>Saisissez les 23 caractères du RIB (code banque, code guichet, numéro de compte et clé) dans l’outil : il vérifie la clé RIB et calcule l’IBAN correspondant, en ajoutant FR et les deux chiffres de contrôle.</p>',
+  },
+  {
+    q: 'Le BIC est-il encore obligatoire ?',
+    a: '<p>Pour un virement SEPA, non : l’IBAN suffit. Le BIC reste utile hors zone SEPA et pour certains logiciels. S’il est renseigné, il doit être cohérent avec l’IBAN : un BIC allemand avec un IBAN français signale une erreur de copie.</p>',
+  },
+];
+---
+<Base
+  title="Vérifier un IBAN ou un RIB en ligne (clé IBAN, clé RIB, BIC)"
+  description="Vérifiez un IBAN ou un RIB : clé de contrôle, longueur par pays, clé RIB française, conversion RIB vers IBAN et cohérence avec le BIC. Rien n’est envoyé, tout se calcule ici."
+  keywords={["vérifier iban", "iban valide", "clé iban", "vérifier rib", "clé rib", "calcul clé rib", "convertir rib en iban", "rib en iban", "vérification iban en ligne", "iban france 27 caractères", "bic iban", "contrôle iban fournisseur"]}
+  schema={[toolSchema(site, { name: 'Vérificateur d’IBAN et de RIB', path: '/verifier-iban-rib/', description: 'Contrôle un IBAN, un RIB et un BIC.' }), breadcrumbSchema(site, crumbs), faqSchema(faq)]}
+>
+  <Crumbs items={crumbs} />
+  <section class="hero wrap">
+    <h1>Vérifier un IBAN ou un RIB</h1>
+    <p class="lead">Saisissez un IBAN, un RIB ou un BIC. La clé est contrôlée immédiatement, sans que le numéro quitte votre navigateur.</p>
+  </section>
+  <div class="wrap">
+    <QuickCheck label="IBAN, RIB ou BIC" placeholder="ex. FR76 3000 6000 0112 3456 7890 189" />
+
+    <article class="prose narrow section">
+      <h2>Les deux clés d’un IBAN français</h2>
+      <p>Un IBAN français contient deux contrôles imbriqués :</p>
+      <ul>
+        <li><strong>la clé IBAN</strong>, les deux chiffres après <code>FR</code>, calculée par un modulo 97 sur tout le numéro. Elle détecte la quasi-totalité des erreurs de saisie ;</li>
+        <li><strong>la clé RIB</strong>, les deux derniers chiffres, héritée du relevé d’identité bancaire et calculée à partir du code banque, du code guichet et du numéro de compte.</li>
+      </ul>
+      <p>
+        L’outil vérifie les deux, ainsi que la longueur attendue pour le pays (27 caractères pour la France, 22 pour l’Allemagne, 16 pour la Belgique…).
+        Les formules sont détaillées dans le guide <a href={href('/guides/verifier-iban-cle-rib/')}>vérifier un IBAN et une clé RIB</a>.
+      </p>
+      <h2>Les erreurs les plus fréquentes</h2>
+      <ul>
+        <li>un caractère oublié en recopiant un IBAN depuis un PDF ;</li>
+        <li>un RIB saisi dans la colonne IBAN, sans le <code>FR76</code> ;</li>
+        <li>un <code>O</code> à la place d’un <code>0</code> ;</li>
+        <li>un BIC d’une autre banque que celle de l’IBAN.</li>
+      </ul>
+      <p>
+        Pour contrôler les IBAN de tous vos fournisseurs avant un virement groupé, déposez le fichier dans le <a href={href('/')}>vérificateur de fichier</a>.
+      </p>
+    </article>
+    <Faq items={faq} />
+    <section class="section"><h2>Les autres outils</h2><ToolCards exclude="/verifier-iban-rib/" /></section>
+  </div>
+</Base>

@@ -1,0 +1,19 @@
+---
+interface Props {
+  label?: string;
+  placeholder?: string;
+  example?: string;
+}
+const { label = 'Vérifier un numéro', placeholder = 'SIREN, SIRET, n° de TVA, IBAN ou BIC', example } = Astro.props;
+---
+<section class="quick card" data-quick data-example={example} aria-label={label}>
+  <label for="quick-input" class="quick-label">{label}</label>
+  <input id="quick-input" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder={placeholder} data-q />
+  <p class="hint">Le type de numéro est reconnu automatiquement. Le calcul se fait dans votre navigateur.</p>
+  <div data-q-result aria-live="polite"></div>
+</section>
+
+<script>
+  import { mountQuick } from '../scripts/quick-ui';
+  document.querySelectorAll<HTMLElement>('[data-quick]').forEach(mountQuick);
+</script>
