@@ -14,6 +14,7 @@ export const SITE = {
     { name: 'CFONB & camt Tools', url: 'https://cfonb-camt-tools.kothanromeo.dev/', text: 'Convertir un relevé bancaire en Excel' },
     { name: 'FEC Tools', url: 'https://fec-tools.kothanromeo.dev/', text: 'Lire et vérifier un Fichier des Écritures Comptables' },
     { name: 'SEPA XML Tools', url: 'https://sepa-xml-tools.kothanromeo.dev/', text: 'Créer des fichiers de virements et prélèvements SEPA depuis Excel' },
+    { name: 'Tacho DDD Tools', url: 'https://tacho-ddd-tools.kothanromeo.dev/', text: 'Lire une carte conducteur de chronotachygraphe (.DDD)' },
   ],
   locale: 'fr_FR',
   lang: 'fr',
